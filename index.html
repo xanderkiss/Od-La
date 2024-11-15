@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สรุปการสั่งซื้อ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        /* Responsive Design for Small Screens */
+        @media (max-width: 600px) {
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px;
+            }
+            button {
+                font-size: 18px;
+            }
+        }
+
+        /* Styling the Summary Section */
+        #summarySection {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #orderSummary {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .copyButton {
+            width: 100%;
+            padding: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .copyButton:hover {
+            background-color: #0b7dda;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Form to Select Products -->
+    <h1>ข้อมูลสินค้า</h1>
+    <form id="productForm">
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อสินค้า</th>
+                    <th>ราคาเต็ม</th>
+                    <th>ราคาขาย</th>
+                    <th>ราคาโปรโมชัน</th>
+                    <th>เลือก</th>
+                    <th>จำนวน</th>
+                </tr>
+            </thead>
+            <tbody id="productList">
+                <!-- Product rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <button type="button" onclick="generateSummary()">ยืนยันรายการ</button>
+    </form>
+
+    <!-- Summary Section -->
+    <div id="summarySection" style="display:none;">
+        <h1>สรุปการสั่งซื้อ</h1>
+        <textarea id="orderSummary" readonly></textarea>
+        <button class="copyButton" onclick="copySummary()">คัดลอกข้อความ</button>
+    </div>
+
+    <script>
+        const products = [
+            { name: "Niacinamide", full_price: 409, sale_price: 359, promo_price: 339 },
+            { name: "Vivid", full_price: 599, sale_price: 549, promo_price: 499 },
+            { name: "Barrier Moist", full_price: 409, sale_price: 359, promo_price: 339 },
+            { name: "Exo CICA", full_price: 549, sale_price: 499, promo_price: 399 },
+            { name: "De nuit C", full_price: 579, sale_price: 529, promo_price: 459 },
+            { name: "Night Repair", full_price: 749, sale_price: 699, promo_price: 599 },
+            { name: "RetiNight", full_price: 409, sale_price: 359, promo_price: 339 },
+            { name: "BHA", full_price: 409, sale_price: 359, promo_price: 339 },
+            { name: "AHA", full_price: 409, sale_price: 359, promo_price: 339 },
+            { name: "Facial mousse Foam", full_price: 509, sale_price: 459, promo_price: 359 },
+            { name: "Cleansing Oil", full_price: 509, sale_price: 459, promo_price: 359 },
+            { name: "PHA Toner Glowy Skin", full_price: 549, sale_price: 499, promo_price: 399 },
+            { name: "Brightly", full_price: 649, sale_price: 599, promo_price: 499 }
+        ];
+
+        // Function to generate the product list
+        function loadProducts() {
+            const productList = document.getElementById("productList");
+            products.forEach((product, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.full_price}</td>
+                    <td>${product.sale_price}</td>
+                    <td>${product.promo_price}</td>
+                    <td><input type="checkbox" name="product" data-index="${index}" class="productCheckbox"></td>
+                    <td><input type="number" name="quantity" data-index="${index}" value="1" min="1" class="quantityInput" style="width: 60px; text-align: center;"></td>
+                `;
+                productList.appendChild(row);
+            });
+        }
+
+        // Function to generate order summary
+        function generateSummary() {
+            let totalFullPrice = 0;
+            let totalDiscountPrice = 0;
+            let orderSummary = "รายการสั่งซื้อ:\n";
+
+            const selectedProducts = document.querySelectorAll(".productCheckbox:checked");
+            selectedProducts.forEach((checkbox) => {
+                const index = checkbox.getAttribute("data-index");
+                const quantity = document.querySelector(`.quantityInput[data-index="${index}"]`).value;
+                const product = products[index];
+
+                const fullPrice = product.full_price * quantity;
+                const discountPrice = product.promo_price * quantity;
+
+                orderSummary += `${product.name} จำนวน: ${quantity} ชิ้น, ราคาเต็ม: ${fullPrice} บาท, ลดเหลือ: ${discountPrice} บาท\n`;
+
+                totalFullPrice += fullPrice;
+                totalDiscountPrice += discountPrice;
+            });
+
+            orderSummary += `\nสรุปยอดรวม:\nราคาเต็ม: ${totalFullPrice} บาท\nลดเหลือ: ${totalDiscountPrice} บาท\nยอดชำระทั้งหมด: ${totalDiscountPrice} บาท\n\n`;
+            orderSummary += "โอนชำระเงินได้ที่:\nธนาคารกสิกรไทย เลขที่บัญชี 999-99-99\nชื่อบัญชี นางสาวมารวย แซ่ลี้\n";
+
+            document.getElementById("orderSummary").value = orderSummary;
+            document.getElementById("summarySection").style.display = "block";
+            document.getElementById("productForm").style.display = "none";
+        }
+
+        // Function to copy the order summary to clipboard
+        function copySummary() {
+            const orderSummary = document.getElementById("orderSummary");
+            orderSummary.select();
+            document.execCommand("copy");
+            alert("ข้อความได้ถูกคัดลอกไปยังคลิปบอร์ดแล้ว!");
+        }
+
+        // Load the products when the page loads
+        window.onload = loadProducts;
+    </script>
+
+</body>
+</html>
