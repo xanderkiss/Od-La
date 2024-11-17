@@ -6,38 +6,45 @@
     <title>สรุปการสั่งซื้อ</title>
     <style>
         body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100vh;
-			background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
             background-color: white;
         }
+
         th, td {
             padding: 12px;
-            text-align: left;
+            text-align: center; /* จัดกึ่งกลางทั้งข้อความและตัวเลข */
             border: 1px solid #ddd;
+            vertical-align: middle;
         }
+
         th {
             background-color: #4CAF50;
             color: white;
         }
+
         td {
             background-color: #f9f9f9;
         }
+
         button {
             width: 100%;
             padding: 10px;
@@ -48,17 +55,21 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         /* Responsive Design for Small Screens */
         @media (max-width: 600px) {
             table {
                 font-size: 12px;
             }
+
             th, td {
                 padding: 8px;
             }
+
             button {
                 font-size: 18px;
             }
@@ -71,11 +82,10 @@
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            width: 80%;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
-			margin: 0 auto;
         }
 
         #orderSummary {
@@ -104,11 +114,9 @@
         .copyButton:hover {
             background-color: #0b7dda;
         }
-
     </style>
 </head>
 <body>
-
     <!-- Form to Select Products -->
     <h1>ข้อมูลสินค้า</h1>
     <form id="productForm">
@@ -154,7 +162,6 @@
             { name: "Brightly", full_price: 649, sale_price: 599, promo_price: 499 }
         ];
 
-        // Function to generate the product list
         function loadProducts() {
             const productList = document.getElementById("productList");
             products.forEach((product, index) => {
@@ -171,7 +178,6 @@
             });
         }
 
-        // Function to generate order summary
         function generateSummary() {
             let totalFullPrice = 0;
             let totalDiscountPrice = 0;
@@ -200,7 +206,6 @@
             document.getElementById("productForm").style.display = "none";
         }
 
-        // Function to copy the order summary to clipboard
         function copySummary() {
             const orderSummary = document.getElementById("orderSummary");
             orderSummary.select();
@@ -208,9 +213,7 @@
             alert("ข้อความได้ถูกคัดลอกไปยังคลิปบอร์ดแล้ว!");
         }
 
-        // Load the products when the page loads
         window.onload = loadProducts;
     </script>
-
 </body>
 </html>
